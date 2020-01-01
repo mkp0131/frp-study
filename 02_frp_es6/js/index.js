@@ -7,21 +7,18 @@ const products = [
 	{name: '바지', price: 25000}
 ];
 
-// 1. map
+// 1. map ( 배열 내의 모든 요소에 callback function 을 실행한 결과로, 새로운 배열을 리턴. )
 // prodects 의 name 만 추출(arr 형식)
-const map = (predi, iter) => {
+const map = (fn, iter) => {
 	let result = [];
 	for (const a of iter) {
-		result.push(predi(a));
+		result.push(fn(a));
 	}
 	return result;
 }
 
-function *gen() {
-	yield 1;
-	yield 2;
-	yield 3;
-	yield 4;
-}
-var dd = map((a) => a + 1, gen());
-console.log('', dd);
+let tt = new Map([['a', 1], ['b', 2]]);
+
+const dd = map(([key, val]) => [key, val * 999], tt);
+// console.log('', new Map(dd));
+
