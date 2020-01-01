@@ -42,4 +42,26 @@ console.log('', b);
 1. 이터러블(Iterable): 이터레이터를 리턴하는 [Symbol.iterlator]() 를 가진 값
 2. 이터레이터(Iterator): { value, done } 객체를 리턴하는 next() 를 가진 값
 3. 이터러블(Iterable) / 이터레이터(Iterator) 프로토콜: 이터러블을 for...of, 전개 연산자 등과 함께 동작하도록한 규약
+```javascript
+var iterable = {
+	[Symbol.iterator]: function() {
+		let i = 3;
+		return {
+			next() {
+				return (i === 0) ? {value: undefined, done: true} : {value: i--, done: false};
+			},
+			[Symbol.iterator]: function() { return this; }
+		}
+	},
+}
+```
 
+### 제너레이터 / 이터레이터
+1. 제너레이터: 이터레이터이자 이터러블을 생성하는 함수
+```javascript
+function *generator() {
+	yield 'kddkdk';
+	yield 2;
+	yield 'iiuu';
+}
+```
