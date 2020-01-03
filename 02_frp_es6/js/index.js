@@ -17,8 +17,35 @@ const map = (fn, iter) => {
 	return result;
 }
 
-let tt = new Map([['a', 1], ['b', 2]]);
+// 2. filter ( 배열 내의 모든 요소에 callback function 실행하여 조건에 맞는 값만 배열로 리턴. )
+const filter = (fn, iter) => {
+	let result = [];
+	for (const a of iter) {
+		if(fn(a)) result.push(a);
+	}
+	return result;
+}
 
-const dd = map(([key, val]) => [key, val * 999], tt);
-// console.log('', new Map(dd));
+// 3. reduce ( list 의 값을 하나의 값으로 축약. )
+const reduce = (fn, acc, iter) => {
+	if (!iter) {
+		iter = acc[Symbol.iterator]();
+		acc = iter.next().value;
+	}
+	
+	for (const a of iter) {
+		acc = fn(acc, a);
+	}
+	return acc;
+}
 
+// 4. add
+const add = (a, b) => a + b;
+// 2만원 이하의 상품들의 가격을 뽑아온다.
+// 1. 2만원이하의 상품들을 sort
+// 2. 그 상품들의 가격을 sort
+
+var dd = reduce(
+	add,
+	map((product) => product.price, filter((product) => product.price < 20000, products))
+)
