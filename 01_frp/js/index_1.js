@@ -56,8 +56,6 @@ for (let i = 0; i < temp_users.length; i++) {
 }
 console.log("temp_users_name", temp_users_name);
 
-
-
 // 3. 30세 이상인 user 함수형
 result = _filter(users, function (user) {
   return user.age >= 30;
@@ -68,22 +66,18 @@ result = _filter(users, function (user) {
 });
 console.log("30미만[함수형]", result);
 
-
-
 // name을 수집 함수형
 result = _map(users, function (user) {
   return user.name;
 });
 console.log("name을 수집", result);
 
-<<<<<<< HEAD
 // 30세 이상인 user의 name 을 수집
 result = _map(
   _filter(users, (user) => user.age >= 30),
   (user) => user.name
 );
 console.log("30세 이상인 user의 name 을 수집", result);
-=======
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%% 함수 모음 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 // %%%%%%%%%%%%%%%%%%%%%%%%%%% 함수 모음 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,37 +85,36 @@ console.log("30세 이상인 user의 name 을 수집", result);
 
 // % _filter
 function _filter(list, predi) {
-	let new_list = [];
-	_each(list, function(item) {
+  let new_list = [];
+  _each(list, function (item) {
     if (predi(item)) {
       new_list.push(item);
     }
-	})
+  });
   return new_list;
 }
 
 // % _map
 function _map(list, mapper) {
-	let new_list = [];
-	_each(list, function(item) {
-		new_list.push(mapper(item));
-	})
+  let new_list = [];
+  _each(list, function (item) {
+    new_list.push(mapper(item));
+  });
   return new_list;
 }
 
 // % _each
 function _each(list, iter) {
-	for (let i = 0; i < list.length; i++) {
-		const item = list[i];
-		iter(item);
-	}
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    iter(item);
+  }
 }
 
-
-console.log('', document.querySelectorAll('*'));
-document.querySelectorAll('*').map(function(v) {
-	console.log('v', v);
-}).bind([]);
->>>>>>> 9946c72156a3594b0b29a6f5b9dda277a93c5b9d
-
-
+console.log("", document.querySelectorAll("*"));
+document
+  .querySelectorAll("*")
+  .map(function (v) {
+    console.log("v", v);
+  })
+  .bind([]);
