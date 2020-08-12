@@ -38,47 +38,6 @@ var users = [
   { id: 8, name: "MP", age: 23 },
 ];
 
-// 1. 30세이상의 user 를 거른다.
-let temp_users = [];
-for (let i = 0; i < users.length; i++) {
-  const user = users[i];
-  if (user.age >= 30) {
-    temp_users.push(user);
-  }
-}
-console.log("temp_users", temp_users);
-
-// 2. 30세이상인 user 의 name 을 수집
-let temp_users_name = [];
-for (let i = 0; i < temp_users.length; i++) {
-  const user = temp_users[i];
-  temp_users_name.push(user.name);
-}
-console.log("temp_users_name", temp_users_name);
-
-// 3. 30세 이상인 user 함수형
-result = _filter(users, function (user) {
-  return user.age >= 30;
-});
-console.log("30세이상[함수형]", result);
-result = _filter(users, function (user) {
-  return user.age < 30;
-});
-console.log("30미만[함수형]", result);
-
-// name을 수집 함수형
-result = _map(users, function (user) {
-  return user.name;
-});
-console.log("name을 수집", result);
-
-// 30세 이상인 user의 name 을 수집
-result = _map(
-  _filter(users, (user) => user.age >= 30),
-  (user) => user.name
-);
-console.log("30세 이상인 user의 name 을 수집", result);
-
 // %%%%%%%%%%%%%%%%%%%%%%%%%%% 함수 모음 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 // %%%%%%%%%%%%%%%%%%%%%%%%%%% 함수 모음 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 // %%%%%%%%%%%%%%%%%%%%%%%%%%% 함수 모음 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -111,10 +70,38 @@ function _each(list, iter) {
   }
 }
 
-console.log("", document.querySelectorAll("*"));
-document
-  .querySelectorAll("*")
-  .map(function (v) {
-    console.log("v", v);
-  })
-  .bind([]);
+// % _curry (인자를 다루는 기법 => 인자를 하나씩 수집하여 인자가 모두 수집되면 결과 값을 리턴)
+function _curry(fn) {
+  return function (a, b) {
+    if (arguments.length == 2) return fn(a, b);
+    return function (b) {
+      return fn(a, b);
+    };
+  };
+}
+
+// % _curryr (인자를 반대로 적용 => 코드를 쉽게 이해하기 위해서 필요)
+function _curryr(fn) {
+  return function (a, b) {
+    if (arguments.length == 2) return fn(a, b);
+    return function (b) {
+      return fn(b, a);
+    };
+  };
+}
+
+// % _get (obj에 있는 값을 안전하게 참조 why? => 자바스크립트에서 obj 의 참조값이 없는 값이 되면 error 를 생성한다.[뒤에 코드 실행안됨])
+const _get = _curryr(function (obj, key) {
+  if (obj === undefined) {
+    return null;
+  } else {
+    return obj[key];
+  }
+});
+
+// 30세 이상인 user의 name 을 수집
+result = _map(
+  _filter(users, (user) => user.age >= 30),
+  _get("name")
+);
+console.log("##30세 이상인 user의 name 을 수집", result);
