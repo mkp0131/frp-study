@@ -93,3 +93,10 @@ result = _map(users, function (user) {
   return user.name;
 });
 console.log("name을 수집", result);
+
+// 30세 이상인 user의 name 을 수집
+result = _map(
+  _filter(users, (user) => user.age >= 30),
+  (user) => user.name
+);
+console.log("30세 이상인 user의 name 을 수집", result);
