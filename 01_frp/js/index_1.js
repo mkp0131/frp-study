@@ -123,3 +123,5 @@ document.querySelectorAll('*').map(function(v) {
 	console.log('v', v);
 }).bind([]);
 >>>>>>> 9946c72156a3594b0b29a6f5b9dda277a93c5b9d
+
+
