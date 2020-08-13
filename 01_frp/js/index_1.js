@@ -140,17 +140,29 @@ function _go(arg) {
   return _pipe.apply(null, fns)(arg);
 }
 
-_go(
-  500,
-  function (a) {
-    return a + 1;
-  },
-  function (a) {
-    return a * 100;
-  },
-  console.log
-);
 // 30세 이상인 user의 name 을 수집
 // result = fn1(5);
+const get_age = _get("age");
+const get_name = _get("name");
+_go(
+  users,
+  function (users) {
+    return _filter(users, function (user) {
+      return get_age(user) >= 30;
+    });
+  },
+  function (users) {
+    return _map(users, function (user) {
+      return get_name(user);
+    });
+  }
+);
 
-// console.log("##_pipe", result);
+// ##### curryr 로 함수 사용을 간결하게 변경
+_map = _curryr(_map);
+_filter = _curryr(_filter);
+_go(
+  users,
+  _filter((user) => get_age(user) >= 30),
+  _map(get_name)
+);
