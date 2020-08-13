@@ -99,9 +99,31 @@ const _get = _curryr(function (obj, key) {
   }
 });
 
+// % _rest (list 를 잘라서 값을 반환 => 다형성)
+function _rest(list, first, last) {
+  const slice = Array.prototype.slice;
+  if (!first) first = 1;
+  list = slice.call(list, first, last);
+  return list;
+}
+
+// % _reduce (축약된 자료를 생성)
+function _reduce(list, iter, memo) {
+  if (arguments.length === 2) {
+    memo = list[0];
+    const slice = Array.prototype.slice;
+    list = slice.call(list, 1);
+  }
+  _each(list, function (item) {
+    memo = iter(memo, item);
+  });
+  return memo;
+}
+
 // 30세 이상인 user의 name 을 수집
-result = _map(
-  _filter(users, (user) => user.age >= 30),
-  _get("name")
-);
-console.log("##30세 이상인 user의 name 을 수집", result);
+result = _reduce([1, 2, 3], function (a, b) {
+  return a + b;
+});
+
+result = _rest([1, 2, 3]);
+console.log("##reduce", result);
