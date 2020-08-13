@@ -120,10 +120,37 @@ function _reduce(list, iter, memo) {
   return memo;
 }
 
-// 30세 이상인 user의 name 을 수집
-result = _reduce([1, 2, 3], function (a, b) {
-  return a + b;
-});
+// % _pipe (함수를 순차적으로 실행하는 함수팩을 생성 리턴)
+function _pipe() {
+  const fns = arguments;
+  return function (arg) {
+    return _reduce(
+      fns,
+      function (memo, fn) {
+        return fn(memo);
+      },
+      arg
+    );
+  };
+}
 
-result = _rest([1, 2, 3]);
-console.log("##reduce", result);
+// % _go (첫번째인자는 핸들해야하는 값, 두번째부터 함수를 인자로 받아 결과 값을 바로 리턴)
+function _go(arg) {
+  let fns = _rest(arguments);
+  return _pipe.apply(null, fns)(arg);
+}
+
+_go(
+  500,
+  function (a) {
+    return a + 1;
+  },
+  function (a) {
+    return a * 100;
+  },
+  console.log
+);
+// 30세 이상인 user의 name 을 수집
+// result = fn1(5);
+
+// console.log("##_pipe", result);
