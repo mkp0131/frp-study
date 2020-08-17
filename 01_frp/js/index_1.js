@@ -163,17 +163,3 @@ const get_name = _get("name");
 // ##### curryr 로 함수 사용을 간결하게 변경
 _map = _curryr(_map);
 _filter = _curryr(_filter);
-
-// ### 테스트
-_go(
-  users[0],
-  _map(function (v) {
-    return v + "#";
-  }),
-  _map(function (v) {
-    return v.toLowerCase();
-  }),
-  console.log
-);
-
-// console.log("", result(users[0]));
