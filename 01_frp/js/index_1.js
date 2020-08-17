@@ -64,8 +64,9 @@ function _map(list, mapper) {
 
 // % _each
 function _each(list, iter) {
-  for (let i = 0; i < list.length; i++) {
-    const item = list[i];
+  const keys = _keys(list);
+  for (let i = 0; i < keys.length; i++) {
+    const item = list[keys[i]];
     iter(item);
   }
 }
@@ -90,10 +91,10 @@ function _curryr(fn) {
   };
 }
 
-// % _get (obj에 있는 값을 안전하게 참조 why? => 자바스크립트에서 obj 의 참조값이 없는 값이 되면 error 를 생성한다.[뒤에 코드 실행안됨])
+// % _get (obj에 있는 값을 안전하게 참조 why? => 자바스크립트에서 obj 의 참조값이 없는 값이 되면 error 를 생성한다.[뒤에 코드 실행안됨] / null 체크)
 const _get = _curryr(function (obj, key) {
-  if (obj === undefined) {
-    return null;
+  if (obj === null) {
+    return undefined;
   } else {
     return obj[key];
   }
@@ -140,29 +141,39 @@ function _go(arg) {
   return _pipe.apply(null, fns)(arg);
 }
 
+// % _is_object (object 인지 확인)
+function _is_object(list) {
+  return typeof list === "object" && !!list;
+}
+
+// % _keys (Object.keys 활용 => Object.kyes의 경우에는 Object, null 값이 들어오면 작동하지않음.)
+function _keys(list) {
+  if (_is_object(list)) {
+    return Object.keys(list);
+  } else {
+    return [];
+  }
+}
+
 // 30세 이상인 user의 name 을 수집
 // result = fn1(5);
 const get_age = _get("age");
 const get_name = _get("name");
-_go(
-  users,
-  function (users) {
-    return _filter(users, function (user) {
-      return get_age(user) >= 30;
-    });
-  },
-  function (users) {
-    return _map(users, function (user) {
-      return get_name(user);
-    });
-  }
-);
 
 // ##### curryr 로 함수 사용을 간결하게 변경
 _map = _curryr(_map);
 _filter = _curryr(_filter);
+
+// ### 테스트
 _go(
-  users,
-  _filter((user) => get_age(user) >= 30),
-  _map(get_name)
+  users[0],
+  _map(function (v) {
+    return v + "#";
+  }),
+  _map(function (v) {
+    return v.toLowerCase();
+  }),
+  console.log
 );
+
+// console.log("", result(users[0]));
