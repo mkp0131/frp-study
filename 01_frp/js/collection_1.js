@@ -38,62 +38,99 @@ function _negate(fn) {
 function _reject(list, predi) {
   return _filter(list, _negate(predi));
 }
-
+_reject = _curryr(_reject);
 // 1.2 _compact (인자로 받은 값들중 true 인값만 arr 로 만들어 리턴)
 // function _compact(list) {
 //   return _filter(list, _identity);
 // }
 const _compact = _filter(_identity);
 
-
 // 2. 찾아내기 - _find
 // % _find (조건의 맞는 값을 만났을때 맨처음 값을 return 하는 함수)
 function _find(list, predi) {
-	const keys = _keys(list);
-	for (let i = 0; i < keys.length; i++) {
-		const item = list[keys[i]];
-		if(predi(item)) {
-			return item;
-		}
-	}
+  const keys = _keys(list);
+  for (let i = 0; i < keys.length; i++) {
+    const item = list[keys[i]];
+    if (predi(item)) {
+      return item;
+    }
+  }
 }
 _find = _curryr(_find);
 
 // % _find_index (조건에 맞는 값의 index 값을 return)
 function _find_index(list, predi) {
-	const keys = _keys(list);
-	for (let i = 0; i < keys.length; i++) {
-		const item = list[keys[i]];
-		if(predi(item)) {
-			return i;
-		}
-	}
-	return -1;
+  const keys = _keys(list);
+  for (let i = 0; i < keys.length; i++) {
+    const item = list[keys[i]];
+    if (predi(item)) {
+      return i;
+    }
+  }
+  return -1;
 }
 _find_index = _curryr(_find_index);
 
 // % _some (조건을 만족하는 값이 하나라도 있으면 true 를 return)
 function _some(list, predi) {
-	predi = predi || _identity;
-	return _find_index(list, predi) !== -1;
+  predi = predi || _identity;
+  return _find_index(list, predi) !== -1;
 }
 
 // % _every (모두 조건을 만족하는 값이라면 true 를 return)
 function _every(list, predi) {
-	predi = predi || _identity;
-	return _find_index(list, _negate(predi)) === -1;
+  predi = predi || _identity;
+  return _find_index(list, _negate(predi)) === -1;
 }
 
+// 4. 접기 - reduce
+// % _min (배열에 있는 값중에 제일 작은 값을 return)
+function _min(list) {
+  return _reduce(list, function (a, b) {
+    return a > b ? b : a;
+  });
+}
+
+// % _max (배열에 있는 값중 제일 큰 값을 return)
+function _max(list) {
+  return _reduce(list, function (a, b) {
+    return a < b ? b : a;
+  });
+}
+
+// % _min_by (보조함수로 원본값을 변경하여 비교하여 제일 작은 값은 return)
+function _max_by(list, iter) {
+  return _reduce(list, function (a, b) {
+    return iter(a) < iter(b) ? b : a;
+  });
+}
+
+// % _max_by (보조함수로 원본값을 변경하여 비교하여 제일 큰 값은 return)
+function _min_by(list, iter) {
+  return _reduce(list, function (a, b) {
+    return iter(a) > iter(b) ? b : a;
+  });
+}
+_max_by = _curryr(_max_by);
+_min_by = _curryr(_min_by);
+
 // ### 테스트
-// result = _every(users, function(item) {
-// 	return item.age > 28;
-// });
-result = _some([false, 0, 1]);
-console.log("", result);
+// user 30대중 제일 어린사람을 뽑아라
+_go(
+  users,
+  _reject(function (user) {
+    return user.age < 30;
+  }),
+  _min_by(_get("age")),
+  console.log
+);
+result = _min_by(users, function (user) {
+  return user.age;
+});
+// result = _some([false, 0, 1]);
+// console.log("", result);
 // console.log("", result(users[0]));
 
-
-// 1. 조건에 맞는 값이 하나라도 있을 경우 
+// 1. 조건에 맞는 값이 하나라도 있을 경우
 // 2. 변경) 조건에 맞지 않은 값이 하나라도 있을 경우 index를 리턴
 //  => 조건에 모두 맞으면 -1 을 리턴
-
