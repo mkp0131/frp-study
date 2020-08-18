@@ -114,23 +114,24 @@ function _min_by(list, iter) {
 _max_by = _curryr(_max_by);
 _min_by = _curryr(_min_by);
 
+// % _group_by (key 별로 데이터를 group 시켜 object 를 return)
+function _group_by(list, predi) {}
+
+// 0. return 할 최종 값 obj를 생성
+// 1. 보조함수에서 키를 찾아서 키가 obj 에 있다면 key의 해당값(array)에 값을 push
+// 2. obj 에 키가 없다면 키를 생성하고 기본값을 array 을 생성, array의 해당값을 push
+// 3. 마지막에 완성된 obj 를 return;
+
+// _group_by 결과값 예시
+result = {
+  32: [
+    { id: 2, name: "BJ", age: 32 },
+    { id: 3, name: "JM", age: 32 },
+  ],
+  27: [{ id: 4, name: "PJ", age: 27 }],
+};
 // ### 테스트
-// user 30대중 제일 어린사람을 뽑아라
-_go(
-  users,
-  _reject(function (user) {
-    return user.age < 30;
-  }),
-  _min_by(_get("age")),
-  console.log
-);
-result = _min_by(users, function (user) {
-  return user.age;
-});
+
 // result = _some([false, 0, 1]);
 // console.log("", result);
 // console.log("", result(users[0]));
-
-// 1. 조건에 맞는 값이 하나라도 있을 경우
-// 2. 변경) 조건에 맞지 않은 값이 하나라도 있을 경우 index를 리턴
-//  => 조건에 모두 맞으면 -1 을 리턴
