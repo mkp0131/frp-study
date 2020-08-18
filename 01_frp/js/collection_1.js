@@ -45,7 +45,55 @@ function _reject(list, predi) {
 // }
 const _compact = _filter(_identity);
 
+
+// 2. 찾아내기 - _find
+// % _find (조건의 맞는 값을 만났을때 맨처음 값을 return 하는 함수)
+function _find(list, predi) {
+	const keys = _keys(list);
+	for (let i = 0; i < keys.length; i++) {
+		const item = list[keys[i]];
+		if(predi(item)) {
+			return item;
+		}
+	}
+}
+_find = _curryr(_find);
+
+// % _find_index (조건에 맞는 값의 index 값을 return)
+function _find_index(list, predi) {
+	const keys = _keys(list);
+	for (let i = 0; i < keys.length; i++) {
+		const item = list[keys[i]];
+		if(predi(item)) {
+			return i;
+		}
+	}
+	return -1;
+}
+_find_index = _curryr(_find_index);
+
+// % _some (조건을 만족하는 값이 하나라도 있으면 true 를 return)
+function _some(list, predi) {
+	predi = predi || _identity;
+	return _find_index(list, predi) !== -1;
+}
+
+// % _every (모두 조건을 만족하는 값이라면 true 를 return)
+function _every(list, predi) {
+	predi = predi || _identity;
+	return _find_index(list, _negate(predi)) === -1;
+}
+
 // ### 테스트
-result = _compact([1, 2, 0, null, false, {}]);
+// result = _every(users, function(item) {
+// 	return item.age > 28;
+// });
+result = _some([false, 0, 1]);
 console.log("", result);
 // console.log("", result(users[0]));
+
+
+// 1. 조건에 맞는 값이 하나라도 있을 경우 
+// 2. 변경) 조건에 맞지 않은 값이 하나라도 있을 경우 index를 리턴
+//  => 조건에 모두 맞으면 -1 을 리턴
+
