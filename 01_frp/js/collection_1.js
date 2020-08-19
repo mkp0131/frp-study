@@ -115,23 +115,75 @@ _max_by = _curryr(_max_by);
 _min_by = _curryr(_min_by);
 
 // % _group_by (key 별로 데이터를 group 시켜 object 를 return)
-function _group_by(list, predi) {}
+function _group_by(list, iter) {
+  return _reduce(
+    list,
+    function (obj, item) {
+      const key = iter(item);
+      return _push(obj, key, item);
+    },
+    {}
+  );
+}
+_group_by = _curryr(_group_by);
 
-// 0. return 할 최종 값 obj를 생성
-// 1. 보조함수에서 키를 찾아서 키가 obj 에 있다면 key의 해당값(array)에 값을 push
-// 2. obj 에 키가 없다면 키를 생성하고 기본값을 array 을 생성, array의 해당값을 push
-// 3. 마지막에 완성된 obj 를 return;
+// % _count_by ( obj[key]에 맞는 값들을 카운트하여 obj[key] 값에 넣어준다)
+function _count_by(list, iter) {
+  return _reduce(
+    list,
+    function (obj, item) {
+      const key = iter(item);
+      return _inc(obj, key);
+    },
+    {}
+  );
+}
+_count_by = _curryr(_count_by);
 
-// _group_by 결과값 예시
-result = {
-  32: [
-    { id: 2, name: "BJ", age: 32 },
-    { id: 3, name: "JM", age: 32 },
-  ],
-  27: [{ id: 4, name: "PJ", age: 27 }],
-};
-// ### 테스트
+// % _push (obj 에 값이 있는지 확인하고 값을 넣는다. 형태: {[],[], []})
+function _push(obj, key, val) {
+  (obj[key] = obj[key] || []).push(val);
+  return obj;
+}
 
-// result = _some([false, 0, 1]);
-// console.log("", result);
-// console.log("", result(users[0]));
+// % _inc (obj에 값이 있는지 확인하고 값이 있다면 +1 을 해준다.)
+function _inc(obj, key) {
+  obj[key] = ++obj[key] || 1;
+  return obj;
+}
+
+// % _pair ([key, value] 로된 date 를 [] 로 감싸서 return)
+const _pair = _map(function (item, key) {
+  return [key, item];
+});
+
+// 20대-?명, 30대-?명 문장을 만들어서 출력해라
+_go(
+  users,
+  _count_by(function (user) {
+    return user.age - (user.age % 10);
+  }),
+  function (data) {
+    let msg = "";
+    _each(data, function (item, key) {
+      msg += key + "대-" + item + "명 ";
+    });
+    // console.log(this);
+  }
+);
+
+// result = _map([4, 5, 6], function (item, key) {
+//   const obj = {};
+//   obj[key] = item;
+//   return obj;
+// });
+
+// _go(
+//   [4, 5, 6],
+//   _map(function (item, key) {
+//     const obj = {};
+//     obj[key] = item;
+//     return obj;
+//   }),
+//   console.log
+// );

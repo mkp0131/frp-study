@@ -57,8 +57,8 @@ function _filter(list, predi) {
 // % _map
 function _map(list, mapper) {
   let new_list = [];
-  _each(list, function (item) {
-    new_list.push(mapper(item));
+  _each(list, function (item, key) {
+    new_list.push(mapper(item, key));
   });
   return new_list;
 }
@@ -68,7 +68,7 @@ function _each(list, iter) {
   const keys = _keys(list);
   for (let i = 0; i < keys.length; i++) {
     const item = list[keys[i]];
-    iter(item);
+    iter(item, keys[i]);
   }
 }
 
