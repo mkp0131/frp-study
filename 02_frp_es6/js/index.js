@@ -154,4 +154,16 @@ const str = `<table>
 			</tbody>
 		</table>`;
 
-document.querySelector("#root").innerHTML = str;
+// document.querySelector("#root").innerHTML = str;
+
+// ## range
+const range = (l) => {
+  let i = -1;
+  let result = [];
+  while (i++ < l) {
+    result.push(i);
+  }
+  return result;
+};
+
+console.log("", range(10));
