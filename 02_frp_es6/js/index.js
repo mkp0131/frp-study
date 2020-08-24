@@ -166,4 +166,14 @@ const range = (l) => {
   return result;
 };
 
-console.log("", range(10));
+// ## L.range (제너레이터를 이용한 함수)
+const L = {};
+L.range = function* (l) {
+  let i = -1;
+  while (i++ < l) {
+    yield i;
+  }
+};
+const lrange10 = L.range(10);
+
+go(lrange10, reduce(add), console.log);
