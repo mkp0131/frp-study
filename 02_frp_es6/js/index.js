@@ -31,6 +31,7 @@ const nodeList = document.querySelectorAll("*");
 let filter = (fn, iterable) => {
   let result = [];
   each((item) => {
+    console.log("@", item);
     if (fn(item)) result.push(item);
   }, iterable);
   return result;
@@ -78,13 +79,13 @@ reduce = curry(reduce);
 // );
 
 // 중복되는 함수 pipe 로 축약 예시
-const totalPirce = (predi) =>
-  pipe(
-    filter(predi),
-    map((item) => item.price),
-    reduce((a, b) => a + b),
-    console.log
-  );
+// const totalPirce = (predi) =>
+//   pipe(
+//     filter(predi),
+//     map((item) => item.price),
+//     reduce((a, b) => a + b),
+//     console.log
+//   );
 
 // ### add 함수
 const add = (a, b) => a + b;
@@ -101,58 +102,58 @@ const add = (a, b) => a + b;
 
 // 연습문제
 // 1. 모든 item 의 수량을 합산해주는 함수
-const sum = curry((predi, products) => pipe(map(predi), reduce(add))(products));
+// const sum = curry((predi, products) => pipe(map(predi), reduce(add))(products));
 
-const total_price = sum((item) => item.quantity * item.price);
+// const total_price = sum((item) => item.quantity * item.price);
 
-const total_quantity = sum((item) => item.quantity);
+// const total_quantity = sum((item) => item.quantity);
 
-// result = total_quantity(products);
-// console.log("", result);
+// // result = total_quantity(products);
+// // console.log("", result);
 
-const str = `<table>
-			<thead>
-				<tr>
-					<th></th>
-					<th>상품</th>
-					<th>가격</th>
-					<th>수량</th>
-					<th>합계</th>
-				</tr>
-			</thead>
-			<tbody>
-			${go(
-        products,
-        sum(
-          (item) =>
-            `<tr>
-						<td>
-							<input type="checkbox" ${item.is_selected ? "checked='checked'" : ""} />
-						</td>
-            <td>${item.name}</td>
-            <td>${item.price}</td>
-            <td>${item.quantity}</td>
-            <td>${item.quantity * item.price}</td>
-          </tr>`
-        )
-      )}
-			<tr>
-				<td colspan="2">합계</td>
-				<td>${total_quantity(
-          filter((item) => (item.is_selected ? item.quantity : 0), products)
-        )}
-				</td>
-				<td>${go(
-          products,
-          sum((item) => (item.is_selected ? item.quantity : 0))
-        )}</td>
-				<td>${go(
-          products,
-          sum((item) => (item.is_selected ? item.quantity * item.price : 0))
-        )}</td>
-			</tr>
-			</tbody>
-		</table>`;
+// const str = `<table>
+// 			<thead>
+// 				<tr>
+// 					<th></th>
+// 					<th>상품</th>
+// 					<th>가격</th>
+// 					<th>수량</th>
+// 					<th>합계</th>
+// 				</tr>
+// 			</thead>
+// 			<tbody>
+// 			${go(
+//         products,
+//         sum(
+//           (item) =>
+//             `<tr>
+// 						<td>
+// 							<input type="checkbox" ${item.is_selected ? "checked='checked'" : ""} />
+// 						</td>
+//             <td>${item.name}</td>
+//             <td>${item.price}</td>
+//             <td>${item.quantity}</td>
+//             <td>${item.quantity * item.price}</td>
+//           </tr>`
+//         )
+//       )}
+// 			<tr>
+// 				<td colspan="2">합계</td>
+// 				<td>${total_quantity(
+//           filter((item) => (item.is_selected ? item.quantity : 0), products)
+//         )}
+// 				</td>
+// 				<td>${go(
+//           products,
+//           sum((item) => (item.is_selected ? item.quantity : 0))
+//         )}</td>
+// 				<td>${go(
+//           products,
+//           sum((item) => (item.is_selected ? item.quantity * item.price : 0))
+//         )}</td>
+// 			</tr>
+// 			</tbody>
+// 		</table>`;
 
 // document.querySelector("#root").innerHTML = str;
 
@@ -160,20 +161,59 @@ const str = `<table>
 const range = (l) => {
   let i = -1;
   let result = [];
-  while (i++ < l) {
+  while (++i < l) {
     result.push(i);
   }
   return result;
 };
 
-// ## L.range (제너레이터를 이용한 함수)
+// ## 지연평가 함수 모음 객체 L
 const L = {};
+
+// ## L.range (제너레이터를 이용한 함수)
 L.range = function* (l) {
   let i = -1;
-  while (i++ < l) {
+  while (++i < l) {
+    console.log("#", i);
     yield i;
   }
 };
-const lrange10 = L.range(10);
 
-go(lrange10, reduce(add), console.log);
+// ## take (iterable 을 잘라주는 함수)
+let take = (l, iterable) => {
+  let result = [];
+  for (const iterator of iterable) {
+    result.push(iterator);
+    console.log("?", iterator);
+    if (l === result.length) return result;
+  }
+  return result;
+};
+take = curry(take);
+
+// ## L.map 지연평가
+L.map = curry(function* (fn, iterable) {
+  for (const iterator of iterable) {
+    yield fn(iterator);
+  }
+});
+
+// ## L.filter 지연평가
+L.filter = curry(function* (predi, iterable) {
+  for (const iterator of iterable) {
+    console.log("@", iterator);
+    if (predi(iterator)) yield iterator;
+  }
+});
+
+// 1. 0 ~ 10 까지의 배열을 만들고
+// 2. 홀수를 뽑고
+// 3. 3개의 숫자를 뽑아서 배열을 만든다
+// 4. console.log
+
+go(
+  range(10),
+  filter((n) => n % 2),
+  take(3),
+  console.log
+);
