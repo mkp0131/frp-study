@@ -16,6 +16,34 @@ const products = [
 const map = new Map();
 map.set(1,2);
 map.set('1');
-console.log('', map);
-map.clear();
-console.log('', map);
+// console.log('', map);
+// for (const iterator of map) {
+// 	console.log('', iterator);
+// }
+
+
+
+const str = 'mkp';
+
+const tt = str[Symbol.iterator]();
+
+
+function * counter() {
+	yield 1;
+	yield 2;
+	yield 3;
+	yield 4;
+	yield 5;
+}
+let value = counter();
+
+// for (const iterator of value) {
+// 	console.log('', iterator);
+// }
+// console.log('value', value.next());
+// console.log('value', value.next());
+// console.log('value', value.next());
+// console.log('value', value.next());
+// console.log('value', value.next());
+// console.log('value', value.next());
+console.log('', ...str);
