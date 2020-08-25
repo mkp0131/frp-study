@@ -206,14 +206,28 @@ L.filter = curry(function* (predi, iterable) {
   }
 });
 
-// 1. 0 ~ 10 까지의 배열을 만들고
-// 2. 홀수를 뽑고
-// 3. 3개의 숫자를 뽑아서 배열을 만든다
-// 4. console.log
+// join (reduce 를 이용하여 join 함수 생성)
+const join = curry((sep = ",", iterable) => {
+  return reduce((a, b) => a + sep + b, iterable);
+});
 
-go(
-  range(10),
-  filter((n) => n % 2),
-  take(3),
-  console.log
-);
+// L.entries (object.entries 지연평가)
+L.entries = function* (object) {
+  for (const key in object) {
+    yield [key, object[key]];
+  }
+};
+
+// queryStr 함수 만들기
+// limit=10&offset=10&type=notice 의 문자열로 만들어라
+const queryStr = (obj) =>
+  go(
+    obj,
+    L.entries,
+    map(([a, b]) => `${a}=${b}`),
+    join("&"),
+    console.log
+  );
+// queryStr({ limit: 10, offset: 10, type: "notice" });
+
+let querySample = { limit: 10, offset: 10, type: "notice" };
