@@ -7,6 +7,45 @@ const products = [
   { name: "바지", price: 25000, quantity: 5, is_selected: true },
 ];
 
+// ## curry (함수의 평가시점을 컨트롤(미리 arg를 세팅))
+const curry = (fn) => (a, ...b) =>
+  b.length ? fn(a, ...b) : (...b) => fn(a, ...b);
+const curryr = (fn) => (a) => (b) => fn(b, a);
+
+// ## 지연평가 함수 모음 객체 L
+const L = {};
+
+// ## L.range (제너레이터를 이용한 함수)
+L.range = function* (l) {
+  let i = -1;
+  while (++i < l) {
+    console.log("#", i);
+    yield i;
+  }
+};
+
+// ## L.map 지연평가
+L.map = curry(function* (fn, iterable) {
+  for (const iterator of iterable) {
+    yield fn(iterator);
+  }
+});
+
+// ## L.filter 지연평가
+L.filter = curry(function* (predi, iterable) {
+  for (const iterator of iterable) {
+    console.log("@1");
+    if (predi(iterator)) yield iterator;
+  }
+});
+
+// L.entries (object.entries 지연평가)
+L.entries = function* (object) {
+  for (const key in object) {
+    yield [key, object[key]];
+  }
+};
+
 // ## each [map, filter 에서 사용]
 const each = (fn, iterable) => {
   for (const iterator of iterable) {
@@ -15,11 +54,11 @@ const each = (fn, iterable) => {
 };
 
 // ## map 을 직접 구현
-let map = (fn, iterable) => {
-  let result = [];
-  each((item) => result.push(fn(item)), iterable);
-  return result;
-};
+// let map = (fn, iterable) => {
+//   let result = [];
+//   each((item) => result.push(fn(item)), iterable);
+//   return result;
+// };
 
 // ### 자바스크립트 map 함수를 `arry like object` 에 사용하기
 // 1. bind 사용
@@ -31,7 +70,7 @@ const nodeList = document.querySelectorAll("*");
 let filter = (fn, iterable) => {
   let result = [];
   each((item) => {
-    console.log("@", item);
+    console.log("$2");
     if (fn(item)) result.push(item);
   }, iterable);
   return result;
@@ -62,13 +101,7 @@ const go = (...fns) => reduce((acc, fn) => fn(acc), fns);
 // ## pipe (특정한 값을 추출하는 함수팩)
 const pipe = (fn1, ...fns) => (...arg) => go(fn1(...arg), ...fns);
 
-// ## curry (함수의 평가시점을 컨트롤(미리 arg를 세팅))
-const curry = (fn) => (a, ...b) =>
-  b.length ? fn(a, ...b) : (...b) => fn(a, ...b);
-const curryr = (fn) => (a) => (b) => fn(b, a);
-
 // curry 적용
-map = curry(map);
 filter = curry(filter);
 reduce = curry(reduce);
 // const ttt = pipe(
@@ -167,56 +200,21 @@ const range = (l) => {
   return result;
 };
 
-// ## 지연평가 함수 모음 객체 L
-const L = {};
-
-// ## L.range (제너레이터를 이용한 함수)
-L.range = function* (l) {
-  let i = -1;
-  while (++i < l) {
-    console.log("#", i);
-    yield i;
-  }
-};
-
 // ## take (iterable 을 잘라주는 함수)
 let take = (l, iterable) => {
   let result = [];
   for (const iterator of iterable) {
     result.push(iterator);
-    console.log("?", iterator);
     if (l === result.length) return result;
   }
   return result;
 };
 take = curry(take);
 
-// ## L.map 지연평가
-L.map = curry(function* (fn, iterable) {
-  for (const iterator of iterable) {
-    yield fn(iterator);
-  }
-});
-
-// ## L.filter 지연평가
-L.filter = curry(function* (predi, iterable) {
-  for (const iterator of iterable) {
-    console.log("@", iterator);
-    if (predi(iterator)) yield iterator;
-  }
-});
-
 // join (reduce 를 이용하여 join 함수 생성)
 const join = curry((sep = ",", iterable) => {
   return reduce((a, b) => a + sep + b, iterable);
 });
-
-// L.entries (object.entries 지연평가)
-L.entries = function* (object) {
-  for (const key in object) {
-    yield [key, object[key]];
-  }
-};
 
 // queryStr 함수 만들기
 // limit=10&offset=10&type=notice 의 문자열로 만들어라
@@ -224,10 +222,23 @@ const queryStr = (obj) =>
   go(
     obj,
     L.entries,
-    map(([a, b]) => `${a}=${b}`),
+    L.map(([a, b]) => `${a}=${b}`),
     join("&"),
     console.log
   );
 // queryStr({ limit: 10, offset: 10, type: "notice" });
 
-let querySample = { limit: 10, offset: 10, type: "notice" };
+// let querySample = { limit: 10, offset: 10, type: "notice" };
+
+// ## find (조건에 맞는 처음 값을 return)
+const find = curry((predi, iterable) =>
+  go(iterable, filter(predi), take(1), ([item]) => item)
+);
+
+// ## map => L.map 으로 리팩토링
+let map = (fn, iterable) => go(iterable, L.map(fn), take(Infinity));
+map = curry(map);
+result = map((a) => a + 2, [1, 2, 3]);
+console.log("map", result);
+result = L.map((a) => a + 2, [1, 2, 3]);
+console.log("L.map", result);
