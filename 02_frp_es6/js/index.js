@@ -24,7 +24,7 @@ L.range = function* (l) {
   }
 };
 
-// ## L.map 지연평가
+// ## L.map 지연평가 (iterator 를 반환하는 generator 함수)
 L.map = curry(function* (fn, iterable) {
   for (const iterator of iterable) {
     yield fn(iterator);
@@ -34,7 +34,6 @@ L.map = curry(function* (fn, iterable) {
 // ## L.filter 지연평가
 L.filter = curry(function* (predi, iterable) {
   for (const iterator of iterable) {
-    console.log("@1");
     if (predi(iterator)) yield iterator;
   }
 });
@@ -67,14 +66,14 @@ const nodeList = document.querySelectorAll("*");
 // _map.call(nodeList, (element) => console.log("", element));
 
 // ## filter
-let filter = (fn, iterable) => {
-  let result = [];
-  each((item) => {
-    console.log("$2");
-    if (fn(item)) result.push(item);
-  }, iterable);
-  return result;
-};
+// let filter = (fn, iterable) => {
+//   let result = [];
+//   each((item) => {
+//     console.log("$2");
+//     if (fn(item)) result.push(item);
+//   }, iterable);
+//   return result;
+// };
 
 // ## reduce
 let reduce = (fn, acc, iterable) => {
@@ -102,7 +101,6 @@ const go = (...fns) => reduce((acc, fn) => fn(acc), fns);
 const pipe = (fn1, ...fns) => (...arg) => go(fn1(...arg), ...fns);
 
 // curry 적용
-filter = curry(filter);
 reduce = curry(reduce);
 // const ttt = pipe(
 //   (a, b) => a + b,
@@ -235,10 +233,17 @@ const find = curry((predi, iterable) =>
   go(iterable, filter(predi), take(1), ([item]) => item)
 );
 
+// 모든 배열을 return
+const takeAll = take(Infinity);
+
 // ## map => L.map 으로 리팩토링
-let map = (fn, iterable) => go(iterable, L.map(fn), take(Infinity));
+let map = pipe(L.map, takeAll);
 map = curry(map);
-result = map((a) => a + 2, [1, 2, 3]);
-console.log("map", result);
-result = L.map((a) => a + 2, [1, 2, 3]);
-console.log("L.map", result);
+
+// ## filter => L.filter으로 리팩토링
+let filter = pipe(L.filter, takeAll);
+filter = curry(filter);
+
+result = filter((a) => a > 2, [1,2,3]);
+// result = L.map((a) => a + 2, [1, 2, 3]);
+console.log("L.filter", result);
