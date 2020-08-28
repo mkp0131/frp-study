@@ -19,7 +19,7 @@ const L = {};
 L.range = function* (l) {
   let i = -1;
   while (++i < l) {
-    console.log("#", i);
+    // console.log("#", i);
     yield i;
   }
 };
@@ -27,7 +27,7 @@ L.range = function* (l) {
 // ## L.map 지연평가 (iterator 를 반환하는 generator 함수)
 L.map = curry(function* (fn, iterable) {
   for (const iterator of iterable) {
-		console.log('!map');
+    // console.log("!map");
     yield fn(iterator);
   }
 });
@@ -270,12 +270,12 @@ L.flatten = function* (iterable) {
   for (const iterator of iterable) {
     if (isIterable(iterator)) {
       for (const a of iterator) {
-				console.log('#flatten');
+        // console.log("#flatten");
         yield a;
       }
     } else {
-			console.log('#flatten');
-			yield iterator;
+      // console.log("#flatten");
+      yield iterator;
     }
   }
 };
@@ -286,9 +286,7 @@ const flatten = pipe(L.flatten, take(Infinity));
 // result = flatten([[1, 2], 3, [5, 5, 5, 5, 5]]);
 // console.log("flatten", result);
 
-
-
-// result = [[1, 2], [3], [5, 5, 5, 5, 5]].map( 
+// result = [[1, 2], [3], [5, 5, 5, 5, 5]].map(
 // 	a => {
 // 		let result = a.map(
 // 		b => {
@@ -310,26 +308,75 @@ const flatten = pipe(L.flatten, take(Infinity));
 // 	L.flatten,
 // 	map(fn)
 // )
-L.flatMap = curry(pipe(
-	L.map,
-	L.flatten,
-	// takeAll
-));
+L.flatMap = curry(
+  pipe(
+    L.map,
+    L.flatten
+    // takeAll
+  )
+);
 
 // ## flatMap (배열을 바로 return)
-const flatMap = curry(pipe(
-	L.map,
-	flatten
-));
+const flatMap = curry(pipe(L.map, flatten));
 
 // result = flatMap(map(a => a + '$'), [[1, 2], [3], [5, 5, 5, 5, 5]]);
 // console.log('', result);
 
-
 // 기본 자바스크립트의 flatMap
-result = [ [[33, 2]], 3, [5, 5, 5, 5, 5]].flatMap(a => {
-	// console.log('a', a);
-	const map = Array.prototype.map;
-	return map.call( a, b => b + '$' );
-});
-console.log('@', result);
+// result = [[[33, 2]], 3, [5, 5, 5, 5, 5]].flatMap((a) => {
+//   // console.log('a', a);
+//   const map = Array.prototype.map;
+//   return map.call(a, (b) => b + "$");
+// });
+// console.log("@", result);
+
+var users = [
+  {
+    name: "a",
+    age: 21,
+    family: [
+      { name: "a1", age: 53 },
+      { name: "a2", age: 47 },
+      { name: "a3", age: 16 },
+      { name: "a4", age: 15 },
+    ],
+  },
+  {
+    name: "b",
+    age: 24,
+    family: [
+      { name: "b1", age: 58 },
+      { name: "b2", age: 51 },
+      { name: "b3", age: 19 },
+      { name: "b4", age: 22 },
+    ],
+  },
+  {
+    name: "c",
+    age: 31,
+    family: [
+      { name: "c1", age: 64 },
+      { name: "c2", age: 62 },
+    ],
+  },
+  {
+    name: "d",
+    age: 20,
+    family: [
+      { name: "d1", age: 42 },
+      { name: "d2", age: 42 },
+      { name: "d3", age: 11 },
+      { name: "d4", age: 7 },
+    ],
+  },
+];
+
+// go(
+//   users,
+//   L.map((user) => user.family),
+//   L.flatten,
+//   L.filter((family) => family.age > 18),
+//   L.map((family) => family.name),
+//   take(3),
+//   console.log
+// );
