@@ -244,6 +244,41 @@ map = curry(map);
 let filter = pipe(L.filter, takeAll);
 filter = curry(filter);
 
-result = filter((a) => a > 2, [1,2,3]);
+// result = filter((a) => a > 2, [1, 2, 3]);
 // result = L.map((a) => a + 2, [1, 2, 3]);
-console.log("L.filter", result);
+
+// ## isIterable (이터러블인지 확인하는 함수)
+const isIterable = (a) => a && a[Symbol.iterator];
+
+// console.log("", !!((123)[length] && 1));
+
+// ## L.flatten arr안에 arr로 들어가는 값을 모두 분해해서 하나의 arr로 만는 함수
+// L.flatten = function (list) {
+//   let result = [];
+//   for (let i = 0; i < list.length; i++) {
+//     const element = list[i];
+//     if (typeof element === "object") {
+//       result.push(...element);
+//     } else {
+//       result.push(element);
+//     }
+//   }
+//   return result;
+// };
+L.flatten = function* (iterable) {
+  for (const iterator of iterable) {
+    if (isIterable(iterator)) {
+      for (const a of iterator) {
+        yield a;
+      }
+    } else {
+      yield iterator;
+    }
+  }
+};
+
+// const flatten = (iterable) => go(iterable, L.flatten, take(Infinity));
+const flatten = pipe(L.flatten, take(Infinity));
+
+result = flatten([[1, 2], 3, [5, 5, 5, 5, 5]]);
+console.log("flatten", result);
