@@ -27,6 +27,7 @@ L.range = function* (l) {
 // ## L.map 지연평가 (iterator 를 반환하는 generator 함수)
 L.map = curry(function* (fn, iterable) {
   for (const iterator of iterable) {
+		console.log('!map');
     yield fn(iterator);
   }
 });
@@ -269,10 +270,12 @@ L.flatten = function* (iterable) {
   for (const iterator of iterable) {
     if (isIterable(iterator)) {
       for (const a of iterator) {
+				console.log('#flatten');
         yield a;
       }
     } else {
-      yield iterator;
+			console.log('#flatten');
+			yield iterator;
     }
   }
 };
@@ -280,5 +283,53 @@ L.flatten = function* (iterable) {
 // const flatten = (iterable) => go(iterable, L.flatten, take(Infinity));
 const flatten = pipe(L.flatten, take(Infinity));
 
-result = flatten([[1, 2], 3, [5, 5, 5, 5, 5]]);
-console.log("flatten", result);
+// result = flatten([[1, 2], 3, [5, 5, 5, 5, 5]]);
+// console.log("flatten", result);
+
+
+
+// result = [[1, 2], [3], [5, 5, 5, 5, 5]].map( 
+// 	a => {
+// 		let result = a.map(
+// 		b => {
+// 			console.log('', b);
+// 			return b;
+// 		});
+// 		console.log('result', result);
+// 		return result;
+// 	}
+// );
+// console.log('1', result);
+
+// result = flatten([[1, 2], [3], [5, 5, 5, 5, 5]]).map(a => a + '#');
+// console.log('2', result);
+
+// ## L.flatMap (2차 배열의 값을 모두 펼치면서 map을 적용 => iterator 을 return)
+// L.flatMap = (fn, list) => go(
+// 	list,
+// 	L.flatten,
+// 	map(fn)
+// )
+L.flatMap = curry(pipe(
+	L.map,
+	L.flatten,
+	// takeAll
+));
+
+// ## flatMap (배열을 바로 return)
+const flatMap = curry(pipe(
+	L.map,
+	flatten
+));
+
+// result = flatMap(map(a => a + '$'), [[1, 2], [3], [5, 5, 5, 5, 5]]);
+// console.log('', result);
+
+
+// 기본 자바스크립트의 flatMap
+result = [ [[33, 2]], 3, [5, 5, 5, 5, 5]].flatMap(a => {
+	// console.log('a', a);
+	const map = Array.prototype.map;
+	return map.call( a, b => b + '$' );
+});
+console.log('@', result);
